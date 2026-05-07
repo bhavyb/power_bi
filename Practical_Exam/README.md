@@ -1,250 +1,126 @@
-# 📊 Student Performance Analysis – Power BI Dashboard
+Student Performance Analysis Dashboard (Power BI)
 
-A multi-page Power BI dashboard for analyzing student academic performance, attendance, and behavior using a Star Schema data model.
+This project is a Power BI dashboard created to analyze student performance using academic scores, attendance records, and behavior data. The dashboard helps track overall student progress and provides insights at both class level and individual student level.
 
----
-
-## 📁 Project Structure
-
-```
+Project Files
 StudentPerformanceDashboard/
-├── StudentPerformance.pbix        # Main Power BI file
+│
+├── StudentPerformance.pbix
 ├── Data/
-│   ├── Students.csv               # Dimension table
-│   ├── Scores.csv                 # Fact table
-│   ├── Attendance.csv             # Fact table
-│   └── Behavior.csv               # Fact table
+│   ├── Students.csv
+│   ├── Scores.csv
+│   ├── Attendance.csv
+│   └── Behavior.csv
 └── README.md
-```
 
----
+Dashboard Overview
+The report contains multiple pages to analyze different aspects of student data.
 
-## 🗂️ Dashboard Pages
+1. Home Page
+The home page is used for navigation between dashboards using buttons and bookmarks.
 
-| Page | Description |
-|------|-------------|
-| **Home** | Landing page with navigation buttons |
-| **Academic Dashboard** | KPI cards, score by subject/class, term trend, student table |
-| **Behavior Dashboard** | Donut chart + bar chart of behavior types |
-| **Attendance Dashboard** | Dual-axis line/area chart of attendance % by month |
-| **Student Profile** | Drillthrough page with individual student KPIs |
-| **Tooltips** | Custom tooltip page (Average Score, Attendance %, Score distribution) |
+<img width="1377" height="786" alt="image" src="https://github.com/user-attachments/assets/2ac5e6cb-b267-4f5e-bd3f-eeb1e686760d" />
 
----
 
-## 🧩 Data Model
+2. Academic Dashboard
+This page focuses on academic performance.
+Visuals included:
+KPI cards for:
+Total Students
+Average Attendance %
+Average Score
+Subject-wise performance analysis
+Score trends across terms
+Student-level score table with conditional formatting
 
-**Star Schema:**
+<img width="1373" height="789" alt="image" src="https://github.com/user-attachments/assets/2fce9d1b-a88e-4b19-b68e-30b4ab865f2f" />
 
-```
-Students (Dimension)
-    │
-    ├──► Scores      (Fact) — One-to-Many on StudentID
-    ├──► Attendance  (Fact) — One-to-Many on StudentID
-    └──► Behavior    (Fact) — One-to-Many on StudentID
-```
 
-Cross-filter direction: **Single**
+3. Behavior Dashboard
+This page shows student behavior patterns.
+Visuals included:
+Donut chart for behavior categories
+Bar chart showing frequency of different behavior types
 
----
+<img width="1374" height="775" alt="image" src="https://github.com/user-attachments/assets/d73cf92e-dc8f-4bf3-a6a8-0512a7990eb1" />
 
-## 🔧 Data Cleaning (Power Query)
 
-### Column Naming Conventions
+4. Attendance Dashboard
+This page tracks attendance trends over time.
+Visuals included:
+Attendance percentage by month
+Total attendance records by month using a combined chart
 
-| Raw Name | Cleaned Name |
-|----------|-------------|
-| `student_id` | `StudentID` |
-| `max_score` | `MaxScore` |
-| `exam_type` | `ExamType` |
+<img width="1387" height="788" alt="image" src="https://github.com/user-attachments/assets/fdbc574d-c160-4b3b-99af-821d652d8f43" />
 
-### Data Types
 
-**Students Table**
+5. Student Profile (Drillthrough Page)
+A detailed page for individual student analysis.
+Visuals included:
+Attendance %
+Total Score
+Behavior Count
+Monthly attendance trend
+Behavior breakdown
 
-| Column | Type |
-|--------|------|
-| StudentID | Whole Number |
-| Name | Text |
-| Gender | Text |
-| Class | Whole Number |
-| Section | Text |
+<img width="1383" height="779" alt="image" src="https://github.com/user-attachments/assets/5129ffb4-4a23-41bd-9507-7a1e97696fa4" />
 
-**Scores Table**
+6. Tooltip Page
+Custom tooltips were added to improve user interaction and display quick insights such as:
+Average score
+Attendance percentage
 
-| Column | Type |
-|--------|------|
-| Score | Decimal/Whole |
-| MaxScore | Whole Number |
-| Subject | Text |
-| Term | Text |
+<img width="497" height="349" alt="image" src="https://github.com/user-attachments/assets/5299e7d2-4360-4c16-b99a-0983a9a1adcd" />
 
-**Attendance Table**
 
-| Column | Type |
-|--------|------|
-| Date | Date |
-| Status | Text |
 
-**Behavior Table**
+Relationships were created using StudentID with one-to-many relationships from the Students table to all fact tables.
+Cross-filter direction was kept single to avoid ambiguity.
+Data Cleaning in Power Query
+Several transformations were applied before building the report.
+Some column names were standardized for consistency.
 
-| Column | Type |
-|--------|------|
-| Date | Date |
-| BehaviorType | Text |
 
-### Null Value Handling
+Correct data types were assigned such as:
+Whole Number
+Text
+Date
+Null Value Handling
+Missing values were replaced where required:
+Missing scores replaced with 0
+Empty notes replaced with "No Notes"
+Missing reasons replaced with "Unknown"
+DAX Measures Used
 
-| Column | Replace Null With |
-|--------|------------------|
-| Reason | `"Unknown"` |
-| Notes | `"No Notes"` |
-| Score | `0` |
-
----
-
-## 📐 DAX Measures
-
-```dax
--- Percentage Score
-% Score =
-DIVIDE(SUM(Scores[Score]), SUM(Scores[MaxScore]), 0) * 100
-
--- Average Score per Subject
-Average Score per Subject = AVERAGE(Scores[Score])
-
--- Attendance Measures
-Present Days =
-CALCULATE(COUNT(Attendance[Status]), Attendance[Status] = "Present")
-
-Total Attendance = COUNT(Attendance[Status])
+Some important measures created in the report are shown below.
+% Score = DIVIDE(SUM(Scores[Score]), SUM(Scores[MaxScore]), 0) * 100
 
 Attendance % = DIVIDE([Present Days], [Total Attendance], 0) * 100
 
--- Behavior Count
 Behavior Count = COUNT(Behavior[BehaviorType])
 
--- KPI Measures
 Total Students = DISTINCTCOUNT(Students[StudentID])
-Avg Attendance = AVERAGE([Attendance %])
-Avg Score = AVERAGE(Scores[Score])
 
--- Performance Category
-Performance Category =
-SWITCH(
-    TRUE(),
-    [% Score] >= 80, "High",
-    [% Score] >= 50, "Medium",
-    "Low"
-)
-```
+Additional measures were created for KPIs and analysis.
 
-> 💡 **Tip:** Store all measures in a dedicated empty table: `Measures = {}`
+Filters and Slicers
+The report includes slicers for:
+Class
+Section
+Subject
+Term
 
----
+These slicers were synced across pages for easier navigation and filtering.
+Drillthrough Feature
+A drillthrough page was created for student-level analysis.
+Users can right-click a student name from another visual and open the detailed Student Profile page.
 
-## 📊 Visualizations
+Design Choices
+Conditional formatting was used to highlight performance levels.
+Green color represents high performance.
+Red color represents low performance.
+Bookmarks and buttons were added for navigation between pages.
+Challenges Faced
 
-### Page 1 – Academic Dashboard
-- **KPI Cards:** Total Students (1000), Attendance % (90.05), Avg Score per Subject (49.87)
-- **Stacked Bar Chart:** Average Score by Subject and Class (Classes 1–12)
-- **Line Chart:** Sum of Score by Term (Term 1, 2, 3)
-- **Table:** Student Name, Subject, Sum of Score, % Score with conditional formatting
-
-### Page 2 – Behavior Dashboard
-- **Donut Chart:** Count of StudentID by BehaviorType (equal ~20% each)
-- **Bar Chart:** Behavior Count by BehaviorType (Disruptive, Late, Helpful, Participative, Absent without notice)
-
-### Page 3 – Attendance Dashboard
-- **Dual-Axis Chart:** Attendance % (line, red) + Count of Status (area, blue) by Month
-
-### Page 4 – Student Profile *(Drillthrough)*
-- **KPI Cards:** Behavior Count, Attendance %, Sum of Score
-- **Area Chart:** Attendance % by Year, Quarter, Month
-- **Bar Chart:** Behavior Count by BehaviorType
-
-### Page 5 – Tooltips
-- Average Score per Subject
-- Attendance %
-- Count of StudentID by Score (sparkline)
-
----
-
-## 🔍 Slicers
-
-All pages include synced slicers:
-- **Class** (range slider: 1–12)
-- **Section** (dropdown)
-- **Subject** (dropdown)
-- **Term** (dropdown)
-
----
-
-## 🔗 Drillthrough Setup
-
-1. Create a page named **Student Profile**
-2. Add `Students[Name]` to the **Drillthrough Filters** field well
-3. Right-click any student name on other pages → **Drillthrough → Student Profile**
-
----
-
-## 🎨 Color Theme
-
-| Performance | Color |
-|-------------|-------|
-| High (≥ 80%) | 🟢 Green |
-| Low (< 40%) | 🔴 Red |
-
----
-
-## 🔖 Bookmark Navigation
-
-| Bookmark | Page |
-|----------|------|
-| Academic View | Academic Dashboard |
-| Attendance View | Attendance Dashboard |
-| Behavior View | Behavior Dashboard |
-
-Buttons are assigned via: **Format → Action → Type: Bookmark**
-
----
-
-## 📱 Mobile Layout
-
-Arranged via **View → Mobile Layout:**
-1. KPI Cards — top
-2. Charts — middle
-3. Slicers — bottom
-
----
-
-## ⚠️ Common Errors & Fixes
-
-| Error | Fix |
-|-------|-----|
-| Wrong relationship direction | Always use **One-to-Many** from Students |
-| % Score returning blank | Use `DIVIDE()` instead of `/` |
-| Filters not working | Check: relationship active? Correct cross-filter? Same data types? |
-
----
-
-## ✅ Project Checklist
-
-- [x] Data Cleaning
-- [x] Star Schema Relationships
-- [x] DAX Measures
-- [x] KPI Cards
-- [x] Charts (Bar, Line, Donut, Area)
-- [x] Slicers
-- [x] Drillthrough Page
-- [x] Tooltips
-- [x] Bookmark Navigation
-- [x] Mobile Layout
-
----
-
-## 🛠️ Tools Used
-
-- **Power BI Desktop**
-- **Power Query** (data transformation)
-- **DAX** (measures and calculated columns)
+Conclusion
+This dashboard provides a simple way to monitor student performance across academics, attendance, and behavior. It can help teachers or school management identify trends, track student progress, and make better decisions using data visualization.
