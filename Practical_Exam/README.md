@@ -2,17 +2,6 @@ Student Performance Analysis Dashboard (Power BI)
 
 This project is a Power BI dashboard created to analyze student performance using academic scores, attendance records, and behavior data. The dashboard helps track overall student progress and provides insights at both class level and individual student level.
 
-Project Files
-StudentPerformanceDashboard/
-│
-├── StudentPerformance.pbix
-├── Data/
-│   ├── Students.csv
-│   ├── Scores.csv
-│   ├── Attendance.csv
-│   └── Behavior.csv
-└── README.md
-
 Dashboard Overview
 The report contains multiple pages to analyze different aspects of student data.
 
