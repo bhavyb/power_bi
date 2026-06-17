@@ -54,4 +54,4 @@ Reset Filters Button
 
 These filters make the dashboard highly interactive and user-friendly.
 
-<img width="1342" height="763" alt="image" src="https://github.com/user-attachments/assets/99e81427-0041-444d-a075-2cc0a63e1229" />
+<img width="1343" height="762" alt="image" src="https://github.com/user-attachments/assets/fa66560a-d4f2-4417-92f2-3e679968757d" />
